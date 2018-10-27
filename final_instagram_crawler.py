@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 import pymysql
 from db_env import host, user, password, db, charset
 from multiprocessing import Pool
+import sys
 
 # 로딩
 options = webdriver.ChromeOptions()
@@ -71,6 +72,8 @@ def extract_hash_tags(s):
 
 def crawling_img(keyowrd):
 
+    print("인스타 크롤링을 실행합니다. 키워드 : ", keyword)
+
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -100,7 +103,7 @@ def crawling_img(keyowrd):
                 url_list = list()
                 article_url = pic.select_one('a').get('href')
                 j_post_url = "https://www.instagram.com" + article_url + "&__a=1"
-                print(j_post_url)
+                #print(j_post_url)
                 resp = requests.get(url=j_post_url)
                 data = resp.json()
                 shortcode_media = data["graphql"]["shortcode_media"]
@@ -125,7 +128,7 @@ def crawling_img(keyowrd):
 
                 try:
                     location = shortcode_media["location"]["name"]
-                    print("장소 : " + location)
+                    # print("장소 : " + location)
                 except KeyError:
                     location = ""
                 except TypeError:
@@ -151,7 +154,7 @@ def crawling_img(keyowrd):
                     data['hashtags'] = []
                 data['location'] = location
 
-                print(data)
+                # print(data)
                 try:
 
                     cursor.execute(insert_metadata_sql, (data['location'],))
@@ -171,7 +174,17 @@ def crawling_img(keyowrd):
 
 if __name__ == "__main__":
     keyword_list = ['경복궁', '창덕궁', '광화문', '덕수궁', '종묘', '숭례문', '동대문', '경희궁', '보신각']
-    pool = Pool(processes=8)
-    pool.map(crawling_img(), keyword_list)
+    # pool = Pool(processes=8)
+    # pool.map(crawling_img(), keyword_list)
+    option = sys.argv[1]
 
-    pass
+    if option == "--help":
+        print("0~8 사이의 수를 입력. 각 숫자들은 키워드를 나타냅니다.")
+        for idx, keyword in enumerate(keyword_list):
+            print(idx, ':', keyword)
+
+    elif option not in range(0, 9):
+        print("잘못된 입력입니다.")
+
+    else:
+        crawling_img(keyword_list[option])
