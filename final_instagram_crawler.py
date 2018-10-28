@@ -165,6 +165,10 @@ def crawling_img(keyword):
                         cursor.executemany(insert_hashtag_sql, data['hashtags'])
                     cursor.executemany(insert_img_info_sql, data['img_url'])
                     conn.commit()
+
+                except pymysql.err.MySQLError as sqle:
+                    print(sqle)
+                    continue
                 except Exception as e:
                     print(e)
                     break
