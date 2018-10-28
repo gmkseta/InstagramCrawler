@@ -177,6 +177,7 @@ if __name__ == "__main__":
     # pool = Pool(processes=8)
     # pool.map(crawling_img(), keyword_list)
     option = sys.argv[1]
+    option = int(option)
 
     if option == "--help":
         print("0~8 사이의 수를 입력. 각 숫자들은 키워드를 나타냅니다.")
