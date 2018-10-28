@@ -72,7 +72,7 @@ def extract_hash_tags(s):
 
 def crawling_img(keyowrd):
 
-    print("인스타 크롤링을 실행합니다. 키워드 : ", keyword)
+    print("인스타 크롤링을 실행합니다. 키워드 : ", keyowrd)
 
     conn = get_connection()
     cursor = conn.cursor()
@@ -177,15 +177,15 @@ if __name__ == "__main__":
     # pool = Pool(processes=8)
     # pool.map(crawling_img(), keyword_list)
     option = sys.argv[1]
-    option = int(option)
 
     if option == "--help":
         print("0~8 사이의 수를 입력. 각 숫자들은 키워드를 나타냅니다.")
         for idx, keyword in enumerate(keyword_list):
             print(idx, ':', keyword)
 
-    elif option not in range(0, 9):
-        print("잘못된 입력입니다.")
+    elif int(option) in range(0, 9):
+        crawling_img(keyword_list[int(option)]) 
 
     else:
-        crawling_img(keyword_list[option])
+        print("잘못된 입력입니다.")
+
