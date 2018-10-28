@@ -9,7 +9,7 @@ from db_env import host, user, password, db, charset
 from multiprocessing import Pool
 import sys
 
-TEST_MODE = False
+TEST_MODE = True
 
 # 로딩
 options = webdriver.ChromeOptions()
@@ -171,6 +171,7 @@ def crawling_img(keyword):
                     continue
                 except Exception as e:
                     print(e)
+                    driver.quit()
                     break
                 finally:
                     url_list = list()
