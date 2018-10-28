@@ -9,6 +9,8 @@ from db_env import host, user, password, db, charset
 from multiprocessing import Pool
 import sys
 
+TEST_MODE = False
+
 # 로딩
 options = webdriver.ChromeOptions()
 options.add_argument('headless')
@@ -19,22 +21,23 @@ options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6)
 driver = webdriver.Chrome('chromedriver', chrome_options=options)
 
 
-
-# SQL
-# insert_metadata_sql = "INSERT INTO insta_metadata(insta_location) VALUES (%s)"
-# insert_hashtag_sql = "INSERT INTO insta_hashtag(insta_data_id, insta_hashtag) " \
-#                      "VALUES ((SELECT MAX(insta_data_id) FROM insta_metadata), %s)"
-# insert_img_info_sql = "INSERT INTO image_info(image_url, search_keyword, img_type, insta_data_id, crawling_date)" \
-#                       " VALUES (%s, %s, 1, (SELECT MAX(insta_data_id) FROM insta_metadata), now())"
-# get_insta_id_sql = "SELECT MAX(insta_data_id) FROM insta_metadata"
+if not TEST_MODE:
+    # SQL
+    insert_metadata_sql = "INSERT INTO insta_metadata(insta_location) VALUES (%s)"
+    insert_hashtag_sql = "INSERT INTO insta_hashtag(insta_data_id, insta_hashtag) " \
+                         "VALUES ((SELECT MAX(insta_data_id) FROM insta_metadata), %s)"
+    insert_img_info_sql = "INSERT INTO image_info(image_url, search_keyword, img_type, insta_data_id, crawling_date)" \
+                          " VALUES (%s, %s, 1, (SELECT MAX(insta_data_id) FROM insta_metadata), now())"
+    get_insta_id_sql = "SELECT MAX(insta_data_id) FROM insta_metadata"
 
 # Test SQL
-insert_metadata_sql = "INSERT INTO test_insta_metadata(insta_location) VALUES (%s)"
-insert_hashtag_sql = "INSERT INTO test_insta_hashtag(insta_data_id, insta_hashtag) " \
-                     "VALUES ((SELECT MAX(insta_data_id) FROM test_insta_metadata), %s)"
-insert_img_info_sql = "INSERT INTO test_image_info(image_url, search_keyword, img_type, insta_data_id, crawling_date)" \
-                      " VALUES (%s, %s, 1, (SELECT MAX(insta_data_id) FROM test_insta_metadata), now())"
-get_insta_id_sql = "SELECT MAX(insta_data_id) FROM test_insta_metadata"
+else:
+    insert_metadata_sql = "INSERT INTO test_insta_metadata(insta_location) VALUES (%s)"
+    insert_hashtag_sql = "INSERT INTO test_insta_hashtag(insta_data_id, insta_hashtag) " \
+                         "VALUES ((SELECT MAX(insta_data_id) FROM test_insta_metadata), %s)"
+    insert_img_info_sql = "INSERT INTO test_image_info(image_url, search_keyword, img_type, insta_data_id, crawling_date)" \
+                          " VALUES (%s, %s, 1, (SELECT MAX(insta_data_id) FROM test_insta_metadata), now())"
+    get_insta_id_sql = "SELECT MAX(insta_data_id) FROM test_insta_metadata"
 
 
 def get_connection():
@@ -70,15 +73,15 @@ def extract_hash_tags(s):
     print('regex result : ', result)
     return result
 
-def crawling_img(keyowrd):
+def crawling_img(keyword):
 
-    print("인스타 크롤링을 실행합니다. 키워드 : ", keyowrd)
+    print("인스타 크롤링을 실행합니다. 키워드 : ", keyword)
 
     conn = get_connection()
     cursor = conn.cursor()
 
     # scroll
-    driver.get('http://www.instagram.net/tags/'+keyowrd+'/')
+    driver.get('http://www.instagram.net/tags/' + keyword + '/')
     driver.implicitly_wait(3)
 
     body = driver.find_element_by_tag_name("body")
@@ -145,7 +148,7 @@ def crawling_img(keyowrd):
 
                 data = dict()
                 url_list_size = len(url_list)
-                keyword_list = [keyowrd for i in range(url_list_size)]
+                keyword_list = [keyword for i in range(url_list_size)]
                 data['img_url'] = [(i, j) for i, j in zip(url_list, keyword_list)]
                 # data['text'] = article_text
                 if hashtags:
