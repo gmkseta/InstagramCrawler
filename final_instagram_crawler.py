@@ -9,7 +9,7 @@ from db_env import host, user, password, db, charset
 from multiprocessing import Pool
 import sys
 
-TEST_MODE = True
+TEST_MODE = False
 
 # 로딩
 options = webdriver.ChromeOptions()
@@ -89,7 +89,7 @@ def crawling_img(keyword):
 
     while num_of_pagedowns:
 
-        num_of_pagedowns = num_of_pagedowns - 1
+        #num_of_pagedowns = num_of_pagedowns - 1
         body.send_keys(Keys.PAGE_DOWN)
         body.send_keys(Keys.PAGE_DOWN)
         body.send_keys(Keys.PAGE_DOWN)
