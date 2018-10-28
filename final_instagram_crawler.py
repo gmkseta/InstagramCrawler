@@ -175,8 +175,10 @@ def crawling_img(keyword):
                 finally:
                     url_list = list()
 
+
     cursor.close()
     conn.close()
+    driver.quit()
 
 
 if __name__ == "__main__":
