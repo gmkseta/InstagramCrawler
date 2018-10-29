@@ -11,16 +11,6 @@ import sys
 
 TEST_MODE = False
 
-# 로딩
-options = webdriver.ChromeOptions()
-options.add_argument('headless')
-# options.add_argument('window-size=1920*1080')
-# options.add_argument("disable-gpu")
-# options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ")
-options.add_argument("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
-driver = webdriver.Chrome('chromedriver', chrome_options=options)
-
-
 if not TEST_MODE:
     # SQL
     insert_metadata_sql = "INSERT INTO insta_metadata(insta_location) VALUES (%s)"
@@ -74,6 +64,15 @@ def extract_hash_tags(s):
     return result
 
 def crawling_img(keyword):
+    # 로딩
+    options = webdriver.ChromeOptions()
+    options.add_argument('headless')
+    # options.add_argument('window-size=1920*1080')
+    # options.add_argument("disable-gpu")
+    # options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 ")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36")
+    driver = webdriver.Chrome('chromedriver', chrome_options=options)
 
     print("인스타 크롤링을 실행합니다. 키워드 : ", keyword)
 
@@ -111,6 +110,7 @@ def crawling_img(keyword):
                 try:
                     data = resp.json()
                 except Exception as e:
+                    print(e)
                     continue
                 shortcode_media = data["graphql"]["shortcode_media"]
                 typename = shortcode_media["__typename"]
