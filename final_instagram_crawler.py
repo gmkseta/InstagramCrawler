@@ -108,7 +108,10 @@ def crawling_img(keyword):
                 j_post_url = "https://www.instagram.com" + article_url + "&__a=1"
                 #print(j_post_url)
                 resp = requests.get(url=j_post_url)
-                data = resp.json()
+                try:
+                    data = resp.json()
+                except Exception as e:
+                    continue
                 shortcode_media = data["graphql"]["shortcode_media"]
                 typename = shortcode_media["__typename"]
 
@@ -175,7 +178,6 @@ def crawling_img(keyword):
                     break
                 finally:
                     url_list = list()
-
 
     cursor.close()
     conn.close()
