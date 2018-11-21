@@ -8,6 +8,7 @@ import pymysql
 from db_env import host, user, password, db, charset
 from multiprocessing import Pool
 import sys
+import json
 
 TEST_MODE = False
 
@@ -104,14 +105,19 @@ def crawling_img(keyword):
             for pic in pic_line:
                 url_list = list()
                 article_url = pic.select_one('a').get('href')
-                j_post_url = "https://www.instagram.com" + article_url + "&__a=1"
-                #print(j_post_url)
-                resp = requests.get(url=j_post_url)
-                try:
-                    data = resp.json()
-                except Exception as e:
-                    print(e)
-                    continue
+                url = 'https://www.instagram.com/p/' + article_url
+
+                # j_post_url = "https://www.instagram.com" + article_url + "&__a=1"
+                # #print(j_post_url)
+                # resp = requests.get(url=j_post_url)
+                # try:
+                #     data = resp.json()
+                # except Exception as e:
+                #     print(e)
+                #     continue
+
+                data = parse_json(url)
+
                 shortcode_media = data["graphql"]["shortcode_media"]
                 typename = shortcode_media["__typename"]
 
@@ -182,6 +188,19 @@ def crawling_img(keyword):
     cursor.close()
     conn.close()
     driver.quit()
+
+
+def parse_json(url):
+    re = requests.get(url)
+    json_data = re.text.split('<script type="text/javascript">window._sharedData =')[-1].split('</script>')[0]
+    # preprocessing
+    json_data = json_data.replace(';', '')
+    json_data = json_data.strip()
+    # str to dict
+    d = json.loads(json_data)
+    ret_data = d['entry_data']['PostPage'][0]
+
+    return ret_data
 
 
 if __name__ == "__main__":
