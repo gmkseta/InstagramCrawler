@@ -105,7 +105,7 @@ def crawling_img(keyword):
             for pic in pic_line:
                 url_list = list()
                 article_url = pic.select_one('a').get('href')
-                url = 'https://www.instagram.com/p/' + article_url
+                url = 'https://www.instagram.com' + article_url
 
                 # j_post_url = "https://www.instagram.com" + article_url + "&__a=1"
                 # #print(j_post_url)
